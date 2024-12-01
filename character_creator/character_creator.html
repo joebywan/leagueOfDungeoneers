@@ -1,0 +1,278 @@
+<!-- Updated this original by GamingWithDave https://boardgamegeek.com/filepage/263741/character-creation-tool -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/data.js" defer></script>
+    <script src="./js/scripts.js" defer></script>
+    <title>LoD</title>
+  </head>
+  <body>
+    <h1>League of Dungeoneers</h1>
+    <h3>Character Creation</h3>
+    <table> <!--Table for selection of character species.-->
+      <tr>
+        <td colspan="3">
+          <div id="dynamic_race_select"></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table id=base_attribute_table>
+            <tr>
+              <th>STR</th>
+              <th>CON</th>
+              <th>DEX</th>
+              <th>WIS</th>
+              <th>RES</th>
+            </tr>
+            <!--Display area of base values for selected species.-->
+            <tr>
+              <td id=str_base>-</td>
+              <td id=con_base>-</td>
+              <td id=dex_base>-</td>
+              <td id=wis_base>-</td>
+              <td id=res_base>-</td>
+            </tr>
+          </table>
+        </td>
+        <td></td>
+        <td>
+          <table id=base_hp_table>
+            <tr>
+              <th>HP</th>
+            </tr>
+            <tr>
+              <td id=hp_base>-</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <!--Table for randomly generated values.-->
+    <table id="roll_stats" hidden>
+      <tr>
+        <td colspan="3">
+          <button id=roll_stats type="button" onclick="roll_stats()" >2) Roll your stats</button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <th>STR</th>
+              <th>CON</th>
+              <th>DEX</th>
+              <th>WIS</th>
+              <th>RES</th>
+            </tr>
+            <tr>
+              <td id=str_rolled>-</td>
+              <td id=con_rolled>-</td>
+              <td id=dex_rolled>-</td>
+              <td id=wis_rolled>-</td>
+              <td id=res_rolled>-</td>
+            </tr>
+          </table>
+        </td>
+        <td></td>
+        <td>
+          <table>
+            <tr>
+              <th>HP</th>
+            </tr>
+            <tr>
+              <td id=hp_rolled>-</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <!--Allow for allocation of 15 additional points.-->
+    <table id="bonus_attributes" hidden>
+      <tr>
+        <td colspan="3" id="bonusHeader" style="background-color:yellow;">
+          4) Allocate 15 Bonus Points
+        </td>
+      </tr>
+      <tr>
+      <tr>
+        <td>
+          <table id=summedVals WIDTH=325>
+            <tr>
+              <th>STR</th>
+              <th>CON</th>
+              <th>DEX</th>
+              <th>WIS</th>
+              <th>RES</th>
+            </tr>
+            <tr>
+              <td id=str_total>-</td>
+              <td id=con_total>-</td>
+              <td  id=dex_total>-</td>
+              <td  id=wis_total>-</td>
+              <td  id=res_total>-</td>
+              <!--Hide the current HP summary because you cannot modify it with Bonus Points-->
+              <td  hidden id=hp_total>-</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <td>
+        <table id=bonusAttr WIDTH=325>
+          <tr>
+            <th>STR</th>
+            <th>CON</th>
+            <th>DEX</th>
+            <th>WIS</th>
+            <th>RES</th>
+          </tr>
+          <tr>
+            <td><input type="number" min="0" max="10" id="bstrVal" name="bstrVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+            <td><input type="number" min="0" max="10" id="bconVal" name="bconVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+            <td><input type="number" min="0" max="10" id="bdexVal" name="bdexVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+            <td><input type="number" min="0" max="10" id="bwisVal" name="bwisVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+            <td><input type="number" min="0" max="10" id="bresVal" name="bresVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+          </tr>
+        </table>
+      </td>
+      </tr>
+    </table>
+    <br>
+    <!--Table for selection of character profession.-->
+    <table id="profession" hidden>
+      <tr>
+        <td colspan="3">
+          <label for="profession">5) Choose your profession:</label>
+          <select name="profession_select" id="profession_select" onchange="populateSkillMods()"  >
+            <option value="-"></option>
+            <option value="Alchemist">Alchemist</option>
+            <option value="Barbarian">Barbarian</option>
+            <option value="Ranger">Ranger</option>
+            <option value="Rogue">Rogue</option>
+            <option value="Thief">Thief</option>
+            <option value="Warrior">Warrior</option>
+            <option value="Warrior Priest">Warrior Priest</option>
+            <option value="Wizard">Wizard</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table id=Skills>
+            <tr>SKILL MODIFIERS</tr>
+            <tr>
+              <th style="border:none;"></th>
+              <th>CS <br> (DEX)</th>
+              <th>RS <br> (DEX)</th>
+              <th>Dodge <br> (DEX)</th>
+              <th>Pick Locks <br> (DEX)</th>
+              <th>Barter <br> (WIS)</th>
+              <th>Heal <br> (WIS)</th>
+              <th>Alchemy <br>(WIS)</th>
+              <th>Perception <br>(WIS)</th>
+              <th>Arcane Arts <br>(WIS)</th>
+              <th>Foraging <br> (CON)</th>
+              <th>Prayers <br> (RES)</th>
+            </tr>
+            <!--Display area for skill modifier values.-->
+            <tr>
+              <td style="border:none;"></td>
+              <td id=cs_mod>-</td>
+              <td id=rs_mod>-</td>
+              <td id=dodge_mod>-</td>
+              <td id=picklocks_mod>-</td>
+              <td id=barter_mod>-</td>
+              <td id=heal_mod>-</td>
+              <td id=alchemy_mod>-</td>
+              <td id=perception_mod>-</td>
+              <td id=arcane_mod>-</td>
+              <td id=forage_mod>-</td>
+              <td id=prayer_mod>-</td>
+            </tr>
+            <tr>
+              <td id="freeSkill">6) Select Free<br>Skill</td>
+              <td><input type="radio" id="cs_radio" name="freeSkill" value="CS" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="rs_radio" name="freeSkill" value="RS" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="dodge_radio" name="freeSkill" value="Dodge" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="picklocks_radio" name="freeSkill" value="Locks" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="barter_radio" name="freeSkill" value="Barter" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="heal_radio" name="freeSkill" value="Heal" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="alchemy_radio" name="freeSkill" value="Alchemy" style="display:none;"onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="perception_radio" name="freeSkill" value="Perception" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="arcane_radio" name="freeSkill" value="Arcane" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="forage_radio" name="freeSkill" value="Forage" style="display:none;" onchange="calcFinalValues()"></td>
+              <td><input type="radio" id="prayer_radio" name="freeSkill" value="Prayer" style="display:none;" onchange="calcFinalValues()"></td>
+            </tr>
+          </table>
+        <td></td>
+        <!--Display area for bonus hit points-->  
+        <td>
+          <table>
+            <tr>
+              <th>Bonus<br>HP</th>
+            </tr>
+            <tr>
+              <td id=bonus_hp_mod>-</td>
+            </tr>
+          </table>
+        </td>
+        </td>
+      </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+    <br>
+    <h1 id=finalHeader hidden>Calculated Character Values</h1>
+    <table hidden id=finalStats WIDTH=340>
+      <tr bgcolor= "LightBlue">
+        <th>STR</th>
+        <th>CON</th>
+        <th>DEX</th>
+        <th>WIS</th>
+        <th>RES</th>
+        <th bgcolor="LightCoral" WIDTH=35 >HP</th>
+      </tr>
+      <tr>
+        <td id=finalSTR>-</td>
+        <td id=finalCON>-</td>
+        <td id=finalDEX>-</td>
+        <td id=finalWIS>-</td>
+        <td id=finalRES>-</td>
+        <td id=finalHP>-</td>
+      </tr>
+    </table>
+    <br>
+    <table hidden id=finalSkills>
+      <tr bgcolor= "LightGrey">
+        <th>CS <br> (DEX)</th>
+        <th>RS <br> (DEX)</th>
+        <th>Dodge <br> (DEX)</th>
+        <th>Pick Locks <br> (DEX)</th>
+        <th>Barter <br> (WIS)</th>
+        <th>Heal <br> (WIS)</th>
+        <th>Alchemy <br>(WIS)</th>
+        <th>Perception <br>(WIS)</th>
+        <th>Arcane Arts <br>(WIS)</th>
+        <th>Foraging <br> (CON)</th>
+        <th>Prayers <br> (RES)</th>
+      </tr>
+      <!--Display area of calculated skill values.-->
+      <tr>
+        <td id=finalCS>-</td>
+        <td id=finalRS>-</td>
+        <td id=finalDodge>-</td>
+        <td id=finalLocks>-</td>
+        <td id=finalBarter>-</td>
+        <td id=finalHeal>-</td>
+        <td id=finalAlchemy>-</td>
+        <td id=finalPerception>-</td>
+        <td id=finalArcane>-</td>
+        <td id=finalForage>-</td>
+        <td id=finalPrayer>-</td>
+      </tr>
+    </table>
+  </body>
+</html>

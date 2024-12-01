@@ -1,0 +1,17 @@
+th, td {
+  text-align: center;
+  padding: 8px;
+  border: 1px solid;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+#bonusHeader {
+  background-color: yellow;
+}
+
+.hidden {
+  display: none;
+}
