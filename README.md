@@ -4,7 +4,7 @@ Stuff compiled of use for the League of Dungeoneers board game
 
 ## Character Creator
 
-Pulled from https://boardgamegeek.com/filepage/263741/character-creation-tool originally, I've updated it to split the scripts, css out.  Working on updating it to dynamically update based on additional content added.  Have already done for races.  Means the ./character_creator/js/data.js can be updated with new content.
+Pulled from [https://boardgamegeek.com/filepage/263741/character-creation-tool](https://boardgamegeek.com/filepage/263741/character-creation-tool) originally, I've updated it to split the scripts, css out.  Working on updating it to dynamically update based on additional content added.  Have already done for races.  Means the ./character_creator/js/data.js can be updated with new content.
 
 ## Flowcharts
 
