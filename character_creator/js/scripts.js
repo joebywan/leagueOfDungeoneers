@@ -73,7 +73,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // needed for width of the dropdown (gotta suss out if there's some auto method instead)
   longestOption = 0;
-
+  option_profession = document.createElement("option");
+  option_profession.setAttribute("text",  "-");
+  select_profession.appendChild(option_profession);
   // Get the races, suss out the length of each to find the longest
   for (const profession in character_data.professions) {
     const option_profession = document.createElement("option");
@@ -139,7 +141,7 @@ function roll_stats() {
   for (let i = 1; i <= stats.hp_dice; i++) {
     hp_total += getRandomNumber(1, 6);
   }
-  
+
   dge("hp_rolled").innerText = hp_total;
 
   // Disable the roll button and display the table for the next step
