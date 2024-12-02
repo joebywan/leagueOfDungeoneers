@@ -29,26 +29,20 @@ document.addEventListener("DOMContentLoaded", function () {
   select_races.setAttribute("name", "race_select");
   select_races.setAttribute("id", "race_select");
   select_races.setAttribute("onchange", "base_attribute_load()");
-  select_races.setAttribute("size", Object.keys(character_data.races).length); // Set the size of the dropdown as the size of the list
 
-  // needed for width of the dropdown (gotta suss out if there's some auto method instead)
-  let longestOption = 0;
+  // Add the first blank option
+  option_races = document.createElement("option");
+  option_races.textContent = "Choose me";
+  select_races.appendChild(option_races);
 
   // Get the races, suss out the length of each to find the longest
   for (const race in character_data.races) {
     const option_races = document.createElement("option");
-    option_races.setAttribute("value",  race);
     option_races.textContent = race;
+    option_races.value = race
     select_races.appendChild(option_races);
 
-
-    if (race.length > longestOption) {
-      longestOption = race.length;
-    }
   }
-
-  // Set width dynamically (average character width is ~8px)
-  select_races.style.width = `${longestOption * 8 + 20}px`; // Adjust as needed for padding
 
   // Set the div to be the objects we've just made instead.
   const container_races = dge("dynamic_race_select");
@@ -69,28 +63,20 @@ document.addEventListener("DOMContentLoaded", function () {
   select_profession.setAttribute("name", "profession_select");
   select_profession.setAttribute("id", "profession_select");
   select_profession.setAttribute("onchange", "populateSkillMods()");
-  //select_profession.setAttribute("size", Object.keys(character_data.professions).length); // Set the size of the dropdown as the size of the list
 
-  // needed for width of the dropdown (gotta suss out if there's some auto method instead)
-  longestOption = 0;
+
+  // Add the first blank option
   option_profession = document.createElement("option");
-  option_profession.setAttribute("text",  "-");
+  option_profession.textContent = "Choose me";
   select_profession.appendChild(option_profession);
+
   // Get the races, suss out the length of each to find the longest
   for (const profession in character_data.professions) {
     const option_profession = document.createElement("option");
     option_profession.setAttribute("value",  profession);
     option_profession.textContent = profession;
     select_profession.appendChild(option_profession);
-
-
-    if (profession.length > longestOption) {
-      longestOption = profession.length;
-    }
   }
-
-  // Set width dynamically (average character width is ~8px)
-  //select_profession.style.width = `${longestOption * 8 + 20}px`; // Adjust as needed for padding
 
   // Set the div to be the objects we've just made instead.
   const container_professions = dge("dynamic_profession_select");
