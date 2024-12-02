@@ -90,11 +90,12 @@
         </td>
       </tr>
     </table>
+    <br>
     <!--Allow for allocation of 15 additional points.-->
     <table id="bonus_attributes" hidden>
       <tr>
         <td colspan="3" id="bonusHeader" style="background-color:yellow;">
-          4) Allocate 15 Bonus Points
+          3) Allocate 15 Bonus Points
         </td>
       </tr>
       <tr>
@@ -145,18 +146,7 @@
     <table id="profession" hidden>
       <tr>
         <td colspan="3">
-          <label for="profession">5) Choose your profession:</label>
-          <select name="profession_select" id="profession_select" onchange="populateSkillMods()"  >
-            <option value="-"></option>
-            <option value="Alchemist">Alchemist</option>
-            <option value="Barbarian">Barbarian</option>
-            <option value="Ranger">Ranger</option>
-            <option value="Rogue">Rogue</option>
-            <option value="Thief">Thief</option>
-            <option value="Warrior">Warrior</option>
-            <option value="Warrior Priest">Warrior Priest</option>
-            <option value="Wizard">Wizard</option>
-          </select>
+          <div id="dynamic_profession_select"></div>
         </td>
       </tr>
       <tr>

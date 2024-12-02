@@ -13,7 +13,11 @@ window.onload = function() {
 
 // Stuff to do prior to page load
 document.addEventListener("DOMContentLoaded", function () {
-  // Assume characterData is defined globally
+
+  // ---------------------------------------
+  //Create a dynamic dropdown for races
+  // ---------------------------------------
+
   // Create the label
   const label = document.createElement("label");
   label.setAttribute("for", "race_select");
@@ -21,19 +25,21 @@ document.addEventListener("DOMContentLoaded", function () {
   label.setAttribute("vertical-align", "top");
 
   // Create the select (dropdown)
-  const select = document.createElement("select");
-  select.setAttribute("name", "race_select");
-  select.setAttribute("id", "race_select");
-  select.setAttribute("onchange", "base_attribute_load()");
-  select.setAttribute("size", Object.keys(character_data.races).length); // Set the size of the dropdown as the size of the list
+  const select_races = document.createElement("select");
+  select_races.setAttribute("name", "race_select");
+  select_races.setAttribute("id", "race_select");
+  select_races.setAttribute("onchange", "base_attribute_load()");
+  select_races.setAttribute("size", Object.keys(character_data.races).length); // Set the size of the dropdown as the size of the list
 
+  // needed for width of the dropdown (gotta suss out if there's some auto method instead)
   let longestOption = 0;
 
+  // Get the races, suss out the length of each to find the longest
   for (const race in character_data.races) {
-    const option = document.createElement("option");
-    option.setAttribute("value",  race);
-    option.textContent = race;
-    select.appendChild(option);
+    const option_races = document.createElement("option");
+    option_races.setAttribute("value",  race);
+    option_races.textContent = race;
+    select_races.appendChild(option_races);
 
 
     if (race.length > longestOption) {
@@ -42,11 +48,52 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Set width dynamically (average character width is ~8px)
-  select.style.width = `${longestOption * 8 + 20}px`; // Adjust as needed for padding
+  select_races.style.width = `${longestOption * 8 + 20}px`; // Adjust as needed for padding
 
-  const container = dge("dynamic_race_select");
-  container.appendChild(label);
-  container.appendChild(select);
+  // Set the div to be the objects we've just made instead.
+  const container_races = dge("dynamic_race_select");
+  container_races.appendChild(label);
+  container_races.appendChild(select_races);
+
+  // ---------------------------------------
+  // Create a dynamic dropdown for professions
+  // ---------------------------------------
+
+  const label_profession = document.createElement("label");
+  label_profession.setAttribute("for", "profession_select");
+  label_profession.textContent = "4) Choose your profession:";
+  label_profession.setAttribute("vertical-align", "top");
+
+  // Create the select (dropdown)
+  const select_profession = document.createElement("select");
+  select_profession.setAttribute("name", "profession_select");
+  select_profession.setAttribute("id", "profession_select");
+  select_profession.setAttribute("onchange", "populateSkillMods()");
+  //select_profession.setAttribute("size", Object.keys(character_data.professions).length); // Set the size of the dropdown as the size of the list
+
+  // needed for width of the dropdown (gotta suss out if there's some auto method instead)
+  longestOption = 0;
+
+  // Get the races, suss out the length of each to find the longest
+  for (const profession in character_data.professions) {
+    const option_profession = document.createElement("option");
+    option_profession.setAttribute("value",  profession);
+    option_profession.textContent = profession;
+    select_profession.appendChild(option_profession);
+
+
+    if (profession.length > longestOption) {
+      longestOption = profession.length;
+    }
+  }
+
+  // Set width dynamically (average character width is ~8px)
+  //select_profession.style.width = `${longestOption * 8 + 20}px`; // Adjust as needed for padding
+
+  // Set the div to be the objects we've just made instead.
+  const container_professions = dge("dynamic_profession_select");
+  container_professions.appendChild(label_profession);
+  container_professions.appendChild(select_profession);
 });
 
 function base_attribute_load() {
@@ -58,7 +105,7 @@ function base_attribute_load() {
     dge("dex_base").innerText = "-";
     dge("wis_base").innerText = "-";
     dge("res_base").innerText = "-";
-    dge("hp_val").innerText = "-";
+    dge("hp_base").innerText = "-";
   } else {
     dge("str_base").innerText = stats.str;
     dge("con_base").innerText = stats.con;
@@ -84,7 +131,16 @@ function roll_stats() {
   dge("dex_rolled").innerText = getRandomNumber(1, 10);
   dge("wis_rolled").innerText = getRandomNumber(1, 10);
   dge("res_rolled").innerText = getRandomNumber(1, 10);
-  dge("hp_rolled").innerText = getRandomNumber(1, 6);
+
+  // fucking half-ogres and their 2d6
+  const race = dge("race_select").value;
+  stats = character_data.races[race];
+  hp_total = 0
+  for (let i = 1; i <= stats.hp_dice; i++) {
+    hp_total += getRandomNumber(1, 6);
+  }
+  
+  dge("hp_rolled").innerText = hp_total;
 
   // Disable the roll button and display the table for the next step
   dge("roll_stats").disabled = true;
