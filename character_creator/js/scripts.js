@@ -105,7 +105,6 @@ function base_attribute_load() {
 
   // Recalculate summary of base stats if the selected species is changed
   if (!dge("bonus_attributes").hidden) {
-    generateTotals();
     calcFinalValues();
   } else {
     dge("roll_stats_table").hidden = false;
@@ -194,10 +193,9 @@ function checkBonus(element) {
     dge("profession").focus();
     dge("bonusHeader").style.backgroundColor="White";
   }
-  
+
   // Recalculate if the user changes bonus points after totals are displayed.  
   if (dge("finalHeader").hidden == false) {
-    generateTotals();
     calcFinalValues();
   }  // end of if statement
 }  // end of function checkBonus()
@@ -265,6 +263,7 @@ function clearFreeSkill() {
 
 function calcFinalValues() {
 // alert ("calcFinalValues() called...");
+  console.log("called calcFinalValues()")
 
    // clear the visual indicator on Select Free Skill
   dge("freeSkill").style.backgroundColor="White";
