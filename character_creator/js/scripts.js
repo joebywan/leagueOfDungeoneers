@@ -108,7 +108,7 @@ function base_attribute_load() {
     generateTotals();
     calcFinalValues();
   } else {
-    dge("roll_stats").hidden = false;
+    dge("roll_stats_table").hidden = false;
     dge("roll_stats").focus();
   }
 }
@@ -127,7 +127,6 @@ function roll_stats() {
   for (let i = 1; i <= stats.hp_dice; i++) {
     hp_total += getRandomNumber(1, 6);
   }
-
   dge("hp_rolled").innerText = hp_total;
 
   // Disable the roll button and display the table for the next step
