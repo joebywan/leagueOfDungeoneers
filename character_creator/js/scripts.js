@@ -193,13 +193,13 @@ function checkBonus(element) {
 
     dge("profession").focus();
     dge("bonusHeader").style.backgroundColor="White";
-
-  // Recalculate if the user changes bonus points after totals are displayed.  
-    if (dge("finalHeader").hidden == false) {
-      generateTotals();
-      calcFinalValues();
-    }  // end of if statement
   }
+  
+  // Recalculate if the user changes bonus points after totals are displayed.  
+  if (dge("finalHeader").hidden == false) {
+    generateTotals();
+    calcFinalValues();
+  }  // end of if statement
 }  // end of function checkBonus()
 
 function populateSkillMods() {
