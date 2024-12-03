@@ -200,7 +200,7 @@ const character_data = {
 
     bonuses: {
         maxBonusPoints: 15,
-        maxPerStat: 10,
+        maxBonusPerStat: 10,
         freeSkillBonus: 10,
     },
 };

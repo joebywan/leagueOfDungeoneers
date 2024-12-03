@@ -1,3 +1,7 @@
+// ---------------------------------------
+// Helper functions
+// ---------------------------------------
+
 //sick of typing it all out
 function dge(id) {
   if (document.getElementById(id)) {
@@ -6,16 +10,18 @@ function dge(id) {
   return false
 }
 
-// On page load set focus to first dropdown element
-window.onload = function() {
-  dge("race_select").focus();
-};
+function getRandomNumber(min, max) {
+  // Generate a random number between min (inclusive) and max (inclusive)
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
-// Stuff to do prior to page load
+// ---------------------------------------
+// Load stuff before the page loads proper
+// ---------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
 
   // ---------------------------------------
-  //Create a dynamic dropdown for races
+  // Create a dynamic dropdown for races
   // ---------------------------------------
 
   // Create the label
@@ -84,17 +90,27 @@ document.addEventListener("DOMContentLoaded", function () {
   container_professions.appendChild(select_profession);
 });
 
+// On page load set focus to first dropdown element
+window.onload = function() {
+  dge("race_select").focus();
+};
+
+
+// ---------------------------------------
+// Lookup the race from the dropdown
+// Load the stats into the table
+// ---------------------------------------
 function base_attribute_load() {
-  const race = dge("race_select").value;
+  const race = dge("race_select").value; //get the race from the dropdown and look it up.
   stats = character_data.races[race];
-  if (!character_data.races[race]) {
+  if (!character_data.races[race]) { //If the race doesn't exist in config, load - instead.
     dge("str_base").innerText = "-";
     dge("con_base").innerText = "-";
     dge("dex_base").innerText = "-";
     dge("wis_base").innerText = "-";
     dge("res_base").innerText = "-";
     dge("hp_base").innerText = "-";
-  } else {
+  } else { // load the found race stats into the table for user to see.
     dge("str_base").innerText = stats.str;
     dge("con_base").innerText = stats.con;
     dge("dex_base").innerText = stats.dex;
@@ -112,6 +128,11 @@ function base_attribute_load() {
   }
 }
 
+// ---------------------------------------
+// Roll the random stats
+// Add the roll to the base
+// Display the next area
+// ---------------------------------------
 function roll_stats() {
   dge("str_rolled").innerText = getRandomNumber(1, 10);
   dge("con_rolled").innerText = getRandomNumber(1, 10);
@@ -142,12 +163,13 @@ function roll_stats() {
   dge("bonus_attributes").focus();
 }
 
-function getRandomNumber(min, max) {
-  // Generate a random number between min (inclusive) and max (inclusive)
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
-// Function for processing 15 Bonus Point assignment
+
+// ---------------------------------------
+// Manage the input of values
+// Once the max is hit then display the next area
+// Trigger recalc, and if the end is already shown, trigger recalc on each change
+// ---------------------------------------
 function checkBonus(element) {
 
 // Do not allow the input of negative values.
@@ -155,9 +177,9 @@ function checkBonus(element) {
     dge(element.id).value = Math.abs( dge(element.id).value);
   }
 
-// if input value > 10, then set it to a value of 10 (max allowed)
-  if ( dge(element.id).value > 10) {
-    dge(element.id).value = 10;
+// if input value > 10, then set it to a value of 10 (max allowed) (10 default)
+  if ( dge(element.id).value > character_data.bonuses.maxBonusPerStat) {
+    dge(element.id).value = character_data.bonuses.maxBonusPerStat;
   }
 
  // Total all of the values.
@@ -165,29 +187,29 @@ function checkBonus(element) {
   totalPoints = Number(dge("bstrVal").value) + Number(dge("bconVal").value) + Number(dge("bdexVal").value) + Number(dge("bwisVal").value) + Number(dge("bresVal").value);
 
   // If the total > 15 then calculate the highest allowed value for the last entry.
-  if (totalPoints > 15) {
+  if (totalPoints > character_data.bonuses.maxBonusPoints) {
     totalPoints -= dge(element.id).value;
 
     let calVal = 0;
-    calVal = 15 -  totalPoints;
+    calVal = character_data.bonuses.maxBonusPoints -  totalPoints;
      
     dge(element.id).value = calVal;
-    totalPoints = 15;
+    totalPoints = character_data.bonuses.maxBonusPoints;
 
   }  // end of if totalPoints > 15
 
    // If 15 points have been entered move to next step
-  if (totalPoints == 15) {
+  if (totalPoints == character_data.bonuses.maxBonusPoints) {
     dge("profession").hidden = false;
   }
 
 
    // Need a visual indicator that all 15 ponits have not been allocated.
-  if (totalPoints < 15) {
+  if (totalPoints < character_data.bonuses.maxBonusPoints) {
     dge("bonusHeader").style.backgroundColor="Yellow";
   }
 
-  if (totalPoints == 15) {
+  if (totalPoints == character_data.bonuses.maxBonusPoints) {
     dge("profession").hidden = false;
 
     dge("profession").focus();
@@ -200,6 +222,12 @@ function checkBonus(element) {
   }  // end of if statement
 }  // end of function checkBonus()
 
+
+// ---------------------------------------
+// Take the profession from the dropdown
+// Load the modifiers from ./js/data.js
+// Enable only the radio buttons under the negative modifiers.
+// ---------------------------------------
 function populateSkillMods() {
   // Clear out the Free Skill radio buttons and ensure they are unselected
   clearFreeSkill();
@@ -235,17 +263,11 @@ function populateSkillMods() {
   }
 }
 
-// Helper to toggle free skill buttons based on profession
-function toggleFreeSkillButtons(mods) {
-    const skillButtons = document.getElementsByName("freeSkill");
-    skillButtons.forEach((button) => {
-        const skillName = button.id.toLowerCase();
-        button.style.display = mods[skillName] !== undefined ? "" : "none";
-    });
-}
 
+// ---------------------------------------
+// Clear all of the radio buttons (useful if profession changes)
+// ---------------------------------------
 function clearFreeSkill() {
-// alert ("clearFreeSkill() called");
 
     // Loop through all of the radio elements to uncheck and hide them.
 
@@ -261,11 +283,16 @@ function clearFreeSkill() {
 
 }  // end of function clearFreeSkill()
 
+
+
+// ---------------------------------------
+// Calculate the final values based on the total points and bonuses.
+// ---------------------------------------
 function calcFinalValues() {
 // alert ("calcFinalValues() called...");
   console.log("called calcFinalValues()")
 
-   // clear the visual indicator on Select Free Skill
+  // clear the visual indicator on Select Free Skill
   dge("freeSkill").style.backgroundColor="White";
 
   // Sum the values from the subtotal + allocated bonus points + User entered extra points
@@ -288,79 +315,77 @@ function calcFinalValues() {
 
 
   // Special case Arcane Arts because it is not available to all professions
-   if (dge("arcane_mod").innerHTML == "NA" ) {
-      dge("finalArcane").innerHTML = "NA";
-   }  
-   else
-   {
-      dge("finalArcane").innerHTML = Number(dge("finalWIS").innerHTML) + Number(dge("arcane_mod").innerHTML);
-   }
+  if (dge("arcane_mod").innerHTML == "NA" ) {
+    dge("finalArcane").innerHTML = "NA";
+  }  
+  else
+  {
+    dge("finalArcane").innerHTML = Number(dge("finalWIS").innerHTML) + Number(dge("arcane_mod").innerHTML);
+  }
 
-   dge("finalForage").innerHTML = Number(dge("finalCON").innerHTML) + Number(dge("forage_mod").innerHTML);
+  dge("finalForage").innerHTML = Number(dge("finalCON").innerHTML) + Number(dge("forage_mod").innerHTML);
    
   // Special case Battle Prayers because it is not available to all professions
-   if (dge("prayer_mod").innerHTML == "NA" ) {
-      dge("finalPrayer").innerHTML = "NA";
-   }  
-   else
-   {
-      dge("finalPrayer").innerHTML = Number(dge("finalRES").innerHTML) + Number(dge("prayer_mod").innerHTML);
-   }
+  if (dge("prayer_mod").innerHTML == "NA" ) {
+    dge("finalPrayer").innerHTML = "NA";
+  } else {
+    dge("finalPrayer").innerHTML = Number(dge("finalRES").innerHTML) + Number(dge("prayer_mod").innerHTML);
+  }
 
    // check the selected Free Skill and add +10 to the appropriate skill
-switch ( checkFreeSkill().value) {
-  case "CS": 
-   dge("finalCS").innerHTML = Number(dge("finalCS").innerHTML) + 10;
-   break;
-  case "RS": 
-   dge("finalRS").innerHTML = Number(dge("finalRS").innerHTML) + 10;
-   break;
-  case "Dodge": 
-   dge("finalDodge").innerHTML = Number(dge("finalDodge").innerHTML) + 10;
-   break;
-  case "Locks": 
-   dge("finalLocks").innerHTML = Number(dge("finalLocks").innerHTML) + 10;
-   break;
-  case "Barter": 
-   dge("finalBarter").innerHTML = Number(dge("finalBarter").innerHTML) + 10;
-   break;
-  case "Heal": 
-   dge("finalHeal").innerHTML = Number(dge("finalHeal").innerHTML) + 10;
-   break;
-  case "Alchemy": 
-   dge("finalAlchemy").innerHTML = Number(dge("finalAlchemy").innerHTML) + 10;
-   break;
-  case "Perception": 
-   dge("finalPerception").innerHTML = Number(dge("finalPerception").innerHTML) + 10;
-   break;
-  case "Arcane": 
-   dge("finalArcane").innerHTML = Number(dge("finalArcane").innerHTML) + 10;
-   break;
-  case "Forage": 
-   dge("finalForage").innerHTML = Number(dge("finalForage").innerHTML) + 10;
-   break;
-  case "Prayer": 
-   dge("finalPrayer").innerHTML = Number(dge("finalPrayer").innerHTML) + 10;
-   break;
-   default:
+  switch ( checkFreeSkill().value) {
+    case "CS": 
+      dge("finalCS").innerHTML = Number(dge("finalCS").innerHTML) + 10;
+      break;
+    case "RS": 
+      dge("finalRS").innerHTML = Number(dge("finalRS").innerHTML) + 10;
+      break;
+    case "Dodge": 
+      dge("finalDodge").innerHTML = Number(dge("finalDodge").innerHTML) + 10;
+      break;
+    case "Locks": 
+      dge("finalLocks").innerHTML = Number(dge("finalLocks").innerHTML) + 10;
+      break;
+    case "Barter": 
+      dge("finalBarter").innerHTML = Number(dge("finalBarter").innerHTML) + 10;
+      break;
+    case "Heal": 
+      dge("finalHeal").innerHTML = Number(dge("finalHeal").innerHTML) + 10;
+      break;
+    case "Alchemy": 
+      dge("finalAlchemy").innerHTML = Number(dge("finalAlchemy").innerHTML) + 10;
+      break;
+    case "Perception": 
+      dge("finalPerception").innerHTML = Number(dge("finalPerception").innerHTML) + 10;
+      break;
+    case "Arcane": 
+      dge("finalArcane").innerHTML = Number(dge("finalArcane").innerHTML) + 10;
+      break;
+    case "Forage": 
+      dge("finalForage").innerHTML = Number(dge("finalForage").innerHTML) + 10;
+      break;
+    case "Prayer": 
+      dge("finalPrayer").innerHTML = Number(dge("finalPrayer").innerHTML) + 10;
+      break;
+    default:
       alert("default switch");
-   break;
-} // end of switch
+    break;
+  } // end of switch
 
 // show final values
-   dge("finalHeader").hidden = false;   
-   dge("finalStats").hidden = false;
-   dge("finalSkills").hidden = false;
-   window.scrollTo(0, document.body.scrollHeight);
+  dge("finalHeader").hidden = false;   
+  dge("finalStats").hidden = false;
+  dge("finalSkills").hidden = false;
+  window.scrollTo(0, document.body.scrollHeight);
 
 }  // end of function calcFinalValues()
 
 function checkFreeSkill() {
 //alert("checkFreeSkill() called...");
 
-   var radioButtonGroup = document.getElementsByName("freeSkill");
-   var checkedRadio = Array.from(radioButtonGroup).find((radio) => radio.checked);
+  var radioButtonGroup = document.getElementsByName("freeSkill");
+  var checkedRadio = Array.from(radioButtonGroup).find((radio) => radio.checked);
 
-     return checkedRadio;
+    return checkedRadio;
 
 }  // end of function checkFreeSkill()
