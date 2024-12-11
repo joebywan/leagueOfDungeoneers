@@ -199,7 +199,9 @@ const character_data = {
       },
     },
   
-    bonuses: {
+    config: {
+      attribute_dice: 10,
+      hp_dice: 6,
       maxBonusPoints: 15,
       maxBonusPerStat: 10,
       freeSkillBonus: 10,
@@ -222,7 +224,7 @@ const character_generated = {
     first: 0,
     second: 0,
     third: 0,
-    fouth: 0,
+    fourth: 0,
     fifth: 0,
     hp: 0,
   },
@@ -236,17 +238,6 @@ const character_generated = {
   },
 
   rerolls: 0,
-
-  incrementRerolls() {
-    return this.rerolls++;
-  },
-
-  getMoreRerolls() {
-    if(this.rerolls < character_generated.bonuses.rerolls) {
-      return true;
-    };
-    return false;
-  },
 
   bonus_attributes: {
     str: 0,

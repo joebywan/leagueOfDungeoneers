@@ -65,21 +65,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // Create a dynamic dropdown for professions
   // ---------------------------------------
 
-  const label_profession = document.createElement("label");
-  label_profession.setAttribute("for", "profession_select");
-  label_profession.textContent = "4) Choose your profession:";
-  label_profession.setAttribute("vertical-align", "top");
-
   // Create the select (dropdown)
   const select_profession = document.createElement("select");
   select_profession.setAttribute("name", "profession_select");
   select_profession.setAttribute("id", "profession_select");
-  select_profession.setAttribute("onchange", "populateSkillMods()");
+  select_profession.setAttribute("onchange", "professionSelected()");
 
 
   // Add the first blank option
   option_profession = document.createElement("option");
-  option_profession.textContent = "Choose me";
+  option_profession.textContent = "Choose your profession:";
   select_profession.appendChild(option_profession);
 
   // Get the races, suss out the length of each to find the longest
@@ -92,15 +87,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Set the div to be the objects we've just made instead.
   const container_professions = dgei("dynamic_profession_select");
-  container_professions.appendChild(label_profession);
   container_professions.appendChild(select_profession);
 });
 
 // On page load set focus to first dropdown element
 window.onload = function() {
+  deselectRadios("attribute_assignment_strategy_radiogroup");
+  deselectRadios("STR");
+  deselectRadios("CON");
+  deselectRadios("DEX");
+  deselectRadios("WIS");
+  deselectRadios("RES");
+  deselectRadios("freeSkill");
+  dgei("bstrVal").value = 0;
+  dgei("bconVal").value = 0;
+  dgei("bdexVal").value = 0;
+  dgei("bwisVal").value = 0;
+  dgei("bresVal").value = 0;
   dgei("race_select").focus();
 };
-
 
 // ---------------------------------------
 // Lookup the race from the dropdown
@@ -135,6 +140,8 @@ function race_selected() {
   }
 
   calcFinalValues();
+  dgei("finalHeader").hidden = false;   
+  dgei("finalStats").hidden = false;
 }
 
 // ---------------------------------------
@@ -142,22 +149,38 @@ function race_selected() {
 // ---------------------------------------
 function attribute_assignment_strategy_selected() {
   dgei("attribute_assignment_strategy_header").style.backgroundColor="White";
-  console.log("assignment strategy radiogroup: " + document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value);
   if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "as_rolled") {
+    dgei("assign_attributes_table").hidden = true;
     dgei("str_or_1st").innerText = "STR";
     dgei("con_or_2nd").innerText = "CON";
     dgei("dex_or_3rd").innerText = "DEX";
     dgei("wis_or_4th").innerText = "WIS";
     dgei("res_or_5th").innerText = "RES";
+    character_generated.rolled_attributes.str = character_generated.rolls.first;
+    character_generated.rolled_attributes.con = character_generated.rolls.second;
+    character_generated.rolled_attributes.dex = character_generated.rolls.third;
+    character_generated.rolled_attributes.wis = character_generated.rolls.fourth;
+    character_generated.rolled_attributes.res = character_generated.rolls.fifth;
   } else {
     dgei("str_or_1st").innerText = "1st";
     dgei("con_or_2nd").innerText = "2nd";
     dgei("dex_or_3rd").innerText = "3rd";
     dgei("wis_or_4th").innerText = "4th";
     dgei("res_or_5th").innerText = "5th";
+    character_generated.rolled_attributes.str = 0;
+    character_generated.rolled_attributes.con = 0;
+    character_generated.rolled_attributes.dex = 0;
+    character_generated.rolled_attributes.wis = 0;
+    character_generated.rolled_attributes.res = 0;
   }
 
-  dgei("roll_stats_table").hidden = false;
+  if (dgei("roll_stats_table").hidden) {
+    dgei("roll_stats_table").hidden = false;
+  } else if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "assign" && character_generated.rerolls >= 2) {
+    dgei("assign_attributes_table").hidden = false;
+  }
+  calcFinalValues();
+
 }
 
 // ---------------------------------------
@@ -165,43 +188,131 @@ function attribute_assignment_strategy_selected() {
 // Add the roll to the base
 // Display the next area
 // ---------------------------------------
+function roll_stat(stat) {
+  if (character_generated.rolls[stat] > 0) {
+    character_generated.rerolls++
+    if (character_generated.rerolls === 2) {
+      for (let i of ["first","second","third","fourth","fifth","hp"]) {
+        dgei("reroll_" + i).disabled = true;
+        dgei("rerolls_label").style = "background-color:white;";
+      }
+
+    }
+    dgei("reroll_" + stat).disabled = true;
+  };
+
+  let newroll = 0;
+  if (stat === "hp") {
+    for (let i = 1; i <= character_generated.race.hp_dice; i++) {
+      newroll += getRandomNumber(1, character_data.config.hp_dice);
+    };
+  } else {
+    newroll = getRandomNumber(1, character_data.config.attribute_dice);
+  };
+
+  if (newroll > character_generated.rolls[stat]) {
+    character_generated.rolls[stat] = newroll;
+  };
+  for (let i of ["first","second","third","fourth","fifth","hp"]) { 
+    dgei("rolled_display_" + i).innerText = character_generated.rolls[i];
+  }
+  if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "as_rolled") {
+    for (const [attribute, rollKey] of [
+      ['str', 'first'],
+      ['con', 'second'],
+      ['dex', 'third'],
+      ['wis', 'fourth'],
+      ['res', 'fifth']
+    ]) {
+      character_generated.rolled_attributes[attribute] = character_generated.rolls[rollKey];
+    }
+  }
+  if (character_generated.rerolls === 2) {
+    if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "as_rolled") {
+      dgei("bonus_attributes").hidden = false;
+      dgei("bonus_attributes").focus();
+    } else {
+      loadAttributeSelector();
+      dgei("bonus_attributes").hidden = true;
+    }
+  }
+  calcFinalValues();
+}
+
+
 function roll_stats() {
   // Disable the roll button and display the table for the next step
-  dgei("roll_stats").innerText = "No Rerolls!";
+  dgei("roll_stats").innerText = "No more!";
   dgei("roll_stats").disabled = true;
   dgei("roll_stats_header").style.backgroundColor="White";
 
   // Roll the numbers
-  character_generated.rolls.first = getRandomNumber(1, 10);
-  character_generated.rolls.second = getRandomNumber(1, 10);
-  character_generated.rolls.third = getRandomNumber(1, 10);
-  character_generated.rolls.fourth = getRandomNumber(1, 10);
-  character_generated.rolls.fifth = getRandomNumber(1, 10);
-
-  dgei("1_rolled").innerText = character_generated.rolls.first;
-  dgei("2_rolled").innerText = character_generated.rolls.second;
-  dgei("3_rolled").innerText = character_generated.rolls.third;
-  dgei("4_rolled").innerText = character_generated.rolls.fourth;
-  dgei("5_rolled").innerText = character_generated.rolls.fifth;
-
-  // fucking half-ogres and their 2d6
-  const race = dgei("race_select").value;
-  for (let i = 1; i <= character_generated.race.hp_dice; i++) {
-    character_generated.rolls.hp += getRandomNumber(1, 6);
+  for (let i of ["first","second","third","fourth","fifth","hp"]) { 
+    roll_stat(i);
+    dgei("rolled_display_" + i).innerText = character_generated.rolls[i];
   }
-  dgei("hp_rolled").innerText = character_generated.rolls.hp;
 
-  dgei("str_total").innerText = Number(dgei("str_base").innerText) + Number(dgei("str_rolled").innerText);
-  dgei("con_total").innerText = Number(dgei("con_base").innerText) + Number(dgei("con_rolled").innerText);
-  dgei("dex_total").innerText = Number(dgei("dex_base").innerText) + Number(dgei("dex_rolled").innerText);
-  dgei("wis_total").innerText = Number(dgei("wis_base").innerText) + Number(dgei("wis_rolled").innerText);
-  dgei("res_total").innerText = Number(dgei("res_base").innerText) + Number(dgei("res_rolled").innerText);
-  dgei("hp_total").innerText = Number(dgei("hp_base").innerText) + Number(dgei("hp_rolled").innerText);
+  // enable the reroll buttons
+  dgei("rerolls_row_attributes").hidden = false;
+  dgei("rerolls_row_hp").hidden = false;
+
+  calcFinalValues();
+}
+
+// ---------------------------------------
+// Attribute assignment area grouping all that together.
+// ---------------------------------------
+
+function loadAttributeSelector() {
+  dgei("assign_attributes_table").hidden = false;
+  for (let i of ["first","second","third","fourth","fifth"]) {
+    dgei(i + "_roll_selector").innerText = character_generated.rolls[i]
+  }
+  dgei("assign_attributes_table").focus();
+}
+// clears rows when double selections are detected.
+document.getElementById('assign_attributes_table').addEventListener('change', event => {
+  if (event.target.classList.contains('attribute')) {
+      const selectedRow = event.target.dataset.row;
+      const attributeGroup = event.target.name;
+
+      // Deselect other attributes in the same row
+      document.querySelectorAll(`input[data-row="${selectedRow}"]`).forEach(otherRadio => {
+          if (otherRadio.name !== attributeGroup) {
+              otherRadio.checked = false;
+          }
+      });
+
+      // Deselect other rows for the same attribute
+      document.querySelectorAll(`input[name="${attributeGroup}"]`).forEach(otherRadio => {
+          if (otherRadio.dataset.row !== selectedRow) {
+              otherRadio.checked = false;
+          }
+      });
+  }
+
+  areFiveAttributesSelected()
+});
+
+// Detects when there's all 5 rows selected.  
+function areFiveAttributesSelected() {
+  const rows = [1, 2, 3, 4, 5]; // Row numbers to validate
+  let allRowsSelected = true;
+
+  rows.forEach(row => {
+      // Check if any radio button in the current row is checked
+      const isSelected = document.querySelector(`input[data-row="${row}"]:checked`);
+      console.log("isSelected: " + isSelected);
+      if (!isSelected || isSelected === null) {
+          return
+      }
+  });
+
+  // Enable or disable the "Proceed" button
+  dgei("assign_attributes_header").style = "background-color:white;";
   dgei("bonus_attributes").hidden = false;
   dgei("bonus_attributes").focus();
 }
-
-
 
 // ---------------------------------------
 // Manage the input of values
@@ -216,38 +327,43 @@ function checkBonus(element) {
   }
 
 // if input value > 10, then set it to a value of 10 (max allowed) (10 default)
-  if ( dgei(element.id).value > character_data.bonuses.maxBonusPerStat) {
-    dgei(element.id).value = character_data.bonuses.maxBonusPerStat;
+  if ( dgei(element.id).value > character_data.config.maxBonusPerStat) {
+    dgei(element.id).value = character_data.config.maxBonusPerStat;
   }
 
  // Total all of the values.
   let totalPoints = 0;
   totalPoints = Number(dgei("bstrVal").value) + Number(dgei("bconVal").value) + Number(dgei("bdexVal").value) + Number(dgei("bwisVal").value) + Number(dgei("bresVal").value);
 
+  character_generated.bonus_attributes.str = dgei("bstrVal").value;
+  character_generated.bonus_attributes.con = dgei("bconVal").value;
+  character_generated.bonus_attributes.dex = dgei("bdexVal").value;
+  character_generated.bonus_attributes.wis = dgei("bwisVal").value;
+  character_generated.bonus_attributes.res = dgei("bresVal").value;
+
   // If the total > 15 then calculate the highest allowed value for the last entry.
-  if (totalPoints > character_data.bonuses.maxBonusPoints) {
+  if (totalPoints > character_data.config.maxBonusPoints) {
     totalPoints -= dgei(element.id).value;
 
     let calVal = 0;
-    calVal = character_data.bonuses.maxBonusPoints -  totalPoints;
+    calVal = character_data.config.maxBonusPoints -  totalPoints;
      
     dgei(element.id).value = calVal;
-    totalPoints = character_data.bonuses.maxBonusPoints;
+    totalPoints = character_data.config.maxBonusPoints;
 
   }  // end of if totalPoints > 15
 
    // If 15 points have been entered move to next step
-  if (totalPoints == character_data.bonuses.maxBonusPoints) {
+  if (totalPoints == character_data.config.maxBonusPoints) {
     dgei("profession").hidden = false;
   }
 
-
    // Need a visual indicator that all 15 ponits have not been allocated.
-  if (totalPoints < character_data.bonuses.maxBonusPoints) {
+  if (totalPoints < character_data.config.maxBonusPoints) {
     dgei("bonusHeader").style.backgroundColor="Yellow";
   }
 
-  if (totalPoints == character_data.bonuses.maxBonusPoints) {
+  if (totalPoints == character_data.config.maxBonusPoints) {
     dgei("profession").hidden = false;
 
     dgei("profession").focus();
@@ -266,12 +382,10 @@ function checkBonus(element) {
 // Load the modifiers from ./js/data.js
 // Enable only the radio buttons under the negative modifiers.
 // ---------------------------------------
-function populateSkillMods() {
+function professionSelected() {
+  dgei("profession_select_header").style.backgroundColor="White";
   // Clear out the Free Skill radio buttons and ensure they are unselected
-  let radios = dgen("freeSkill");
-  for (let i = 0; i < radios.length; i++) {
-    radios[i].checked = false;
-  }
+  deselectRadios("freeskill");
 
   // Get the selected profession
   const profession = dgei("profession_select").value;
@@ -295,8 +409,15 @@ function populateSkillMods() {
       }
     }
 
-      dgei("freeSkill").style.backgroundColor = "Yellow";
+      dgei("freeSkill_label").style.backgroundColor = "Yellow";
   }
+}
+
+function professionBonusSelected() {
+
+  dgei("freeSkill_label").style.backgroundColor="White";
+  dgei("finalSkills").hidden = false;
+  calcFinalValues();
 }
 
 // ---------------------------------------
@@ -306,7 +427,10 @@ function calcFinalValues() {
 // alert ("calcFinalValues() called...");
 
   // clear the visual indicator on Select Free Skill
-  dgei("freeSkill").style.backgroundColor="White";
+  if (dgei("freeSkill_label").style.backgroundColor === "Yellow") {
+    dgei("freeSkill_label").style.backgroundColor="White";
+  }
+  
 
   // Sum the values from the subtotal + allocated bonus points + User entered extra points
   dgei("finalSTR").innerHTML = Number(character_generated.race.str) + Number(character_generated.rolled_attributes.str) + Number(character_generated.bonus_attributes.str);
@@ -347,7 +471,8 @@ function calcFinalValues() {
   }
 
   // check the selected Free Skill and add +10 to the appropriate skill
-  if ((typeof checkFreeSkill() === "undefined")) {
+  let freeSkillSelected = document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked');
+  if ((freeSkillSelected === undefined || freeSkillSelected === null)) {
 
   } else {
     let freeskillradio = document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value
@@ -356,19 +481,7 @@ function calcFinalValues() {
 
 
 // show final values
-  dgei("finalHeader").hidden = false;   
-  dgei("finalStats").hidden = false;
-  dgei("finalSkills").hidden = false;
   window.scrollTo(0, document.body.scrollHeight);
 
 }  // end of function calcFinalValues()
 
-function checkFreeSkill() {
-//alert("checkFreeSkill() called...");
-
-  var radioButtonGroup = document.getElementsByName("freeSkill");
-  var checkedRadio = Array.from(radioButtonGroup).find((radio) => radio.checked);
-
-    return checkedRadio;
-
-}  // end of function checkFreeSkill()

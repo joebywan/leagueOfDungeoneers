@@ -83,6 +83,7 @@
         <td>
           <table>
             <tr>
+              <td style="border:none;"></td>
               <th id="str_or_1st">1st</th>
               <th id="con_or_2nd">2nd</th>
               <th id="dex_or_3rd">3rd</th>
@@ -90,11 +91,20 @@
               <th id="res_or_5th">5th</th>
             </tr>
             <tr>
-              <td id=1_rolled>-</td>
-              <td id=2_rolled>-</td>
-              <td id=3_rolled>-</td>
-              <td id=4_rolled>-</td>
-              <td id=5_rolled>-</td>
+              <td style="border:none;"></td>
+              <td id=rolled_display_first>-</td>
+              <td id=rolled_display_second>-</td>
+              <td id=rolled_display_third>-</td>
+              <td id=rolled_display_fourth>-</td>
+              <td id=rolled_display_fifth>-</td>
+            </tr>
+            <tr id="rerolls_row_attributes" hidden>
+              <td id="rerolls_label" style="background-color:yellow;"></td>
+              <td><button id="reroll_first" type="button" onclick="roll_stat('first')" >Reroll</button></td>
+              <td><button id="reroll_second" type="button" onclick="roll_stat('second')" >Reroll</button></td>
+              <td><button id="reroll_third" type="button" onclick="roll_stat('third')" >Reroll</button></td>
+              <td><button id="reroll_fourth" type="button" onclick="roll_stat('fourth')" >Reroll</button></td>
+              <td><button id="reroll_fifth" type="button" onclick="roll_stat('fifth')" >Reroll</button></td>
             </tr>
           </table>
         </td>
@@ -105,7 +115,10 @@
               <th>HP</th>
             </tr>
             <tr>
-              <td id=hp_rolled>-</td>
+              <td id=rolled_display_hp>-</td>
+            </tr>
+            <tr id="rerolls_row_hp" hidden>
+              <td><button id=reroll_hp type="button" onclick="roll_stat('hp')" >Reroll</button></td>
             </tr>
           </table>
         </td>
@@ -114,9 +127,9 @@
     <br>
     <!-- assign attributes table -->
     <table id="assign_attributes_table" hidden>
-        <td colspan="6"><b>Assign Attributes</b></td>
+        <td colspan="6" style="background-color: yellow;"><b>Assign Attributes</b></td>
         <tr>
-            <th>Attribute</th>
+            <th>Rolls</th>
             <th>STR</th>
             <th>CON</th>
             <th>DEX</th>
@@ -124,44 +137,44 @@
             <th>RES</th>
         </tr>
           <tr>
-              <td id="">Row 3</td>
-              <td><input type="radio" name="row3"></td>
-              <td><input type="radio" name="row3"></td>
-              <td><input type="radio" name="row3"></td>
-              <td><input type="radio" name="row3"></td>
-              <td><input type="radio" name="row3"></td>
+              <td id="first_roll_selector">Row 1</td>
+              <td><input type="radio" name="STR" class="attribute" data-row="1"></td>
+              <td><input type="radio" name="CON" class="attribute" data-row="1"></td>
+              <td><input type="radio" name="DEX" class="attribute" data-row="1"></td>
+              <td><input type="radio" name="WIS" class="attribute" data-row="1"></td>
+              <td><input type="radio" name="RES" class="attribute" data-row="1"></td>
           </tr>
           <tr>
-              <td>Row 4</td>
-              <td><input type="radio" name="row4"></td>
-              <td><input type="radio" name="row4"></td>
-              <td><input type="radio" name="row4"></td>
-              <td><input type="radio" name="row4"></td>
-              <td><input type="radio" name="row4"></td>
+              <td id="second_roll_selector">Row 2</td>
+              <td><input type="radio" name="STR" class="attribute" data-row="2"></td>
+              <td><input type="radio" name="CON" class="attribute" data-row="2"></td>
+              <td><input type="radio" name="DEX" class="attribute" data-row="2"></td>
+              <td><input type="radio" name="WIS" class="attribute" data-row="2"></td>
+              <td><input type="radio" name="RES" class="attribute" data-row="2"></td>
           </tr>
           <tr>
-              <td>Row 5</td>
-              <td><input type="radio" name="row5"></td>
-              <td><input type="radio" name="row5"></td>
-              <td><input type="radio" name="row5"></td>
-              <td><input type="radio" name="row5"></td>
-              <td><input type="radio" name="row5"></td>
+              <td id="third_roll_selector">Row 3</td>
+              <td><input type="radio" name="STR" class="attribute" data-row="3"></td>
+              <td><input type="radio" name="CON" class="attribute" data-row="3"></td>
+              <td><input type="radio" name="DEX" class="attribute" data-row="3"></td>
+              <td><input type="radio" name="WIS" class="attribute" data-row="3"></td>
+              <td><input type="radio" name="RES" class="attribute" data-row="3"></td>
           </tr>
           <tr>
-              <td>Row 6</td>
-              <td><input type="radio" name="row6"></td>
-              <td><input type="radio" name="row6"></td>
-              <td><input type="radio" name="row6"></td>
-              <td><input type="radio" name="row6"></td>
-              <td><input type="radio" name="row6"></td>
+              <td id="fourth_roll_selector">Row 4</td>
+              <td><input type="radio" name="STR" class="attribute" data-row="4"></td>
+              <td><input type="radio" name="CON" class="attribute" data-row="4"></td>
+              <td><input type="radio" name="DEX" class="attribute" data-row="4"></td>
+              <td><input type="radio" name="WIS" class="attribute" data-row="4"></td>
+              <td><input type="radio" name="RES" class="attribute" data-row="4"></td>
           </tr>
           <tr>
-              <td>Row 7</td>
-              <td><input type="radio" name="row7"></td>
-              <td><input type="radio" name="row7"></td>
-              <td><input type="radio" name="row7"></td>
-              <td><input type="radio" name="row7"></td>
-              <td><input type="radio" name="row7"></td>
+              <td id="fifth_roll_selector">Row 5</td>
+              <td><input type="radio" name="STR" class="attribute" data-row="5"></td>
+              <td><input type="radio" name="CON" class="attribute" data-row="5"></td>
+              <td><input type="radio" name="DEX" class="attribute" data-row="5"></td>
+              <td><input type="radio" name="WIS" class="attribute" data-row="5"></td>
+              <td><input type="radio" name="RES" class="attribute" data-row="5"></td>
           </tr>
       </tbody>
   </table>
@@ -169,61 +182,33 @@
 
  
 
-    <!--Allow for allocation of 15 additional points.-->
+    <!--Allow for allocation of 15 additional points.WIDTH=325-->
     <table id="bonus_attributes" hidden>
       <tr>
-        <td colspan="3" id="bonusHeader" style="background-color:yellow;">
-          3) Allocate 15 Bonus Points
+        <td colspan="5" id="bonusHeader" style="background-color:yellow;">
+          Allocate 15 Bonus Points
         </td>
       </tr>
       <tr>
-      <tr>
-        <td>
-          <table id=summedVals WIDTH=325>
-            <tr>
-              <th>STR</th>
-              <th>CON</th>
-              <th>DEX</th>
-              <th>WIS</th>
-              <th>RES</th>
-            </tr>
-            <tr>
-              <td id=str_total>-</td>
-              <td id=con_total>-</td>
-              <td  id=dex_total>-</td>
-              <td  id=wis_total>-</td>
-              <td  id=res_total>-</td>
-              <!--Hide the current HP summary because you cannot modify it with Bonus Points-->
-              <td  hidden id=hp_total>-</td>
-            </tr>
-          </table>
-        </td>
+        <th>STR</th>
+        <th>CON</th>
+        <th>DEX</th>
+        <th>WIS</th>
+        <th>RES</th>
       </tr>
-      <td>
-        <table id=bonusAttr WIDTH=325>
-          <tr>
-            <th>STR</th>
-            <th>CON</th>
-            <th>DEX</th>
-            <th>WIS</th>
-            <th>RES</th>
-          </tr>
-          <tr>
-            <td><input type="number" min="0" max="10" id="bstrVal" name="bstrVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
-            <td><input type="number" min="0" max="10" id="bconVal" name="bconVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
-            <td><input type="number" min="0" max="10" id="bdexVal" name="bdexVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
-            <td><input type="number" min="0" max="10" id="bwisVal" name="bwisVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
-            <td><input type="number" min="0" max="10" id="bresVal" name="bresVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
-          </tr>
-        </table>
-      </td>
+      <tr>
+        <td><input type="number" min="0" max="10" id="bstrVal" name="bstrVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+        <td><input type="number" min="0" max="10" id="bconVal" name="bconVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+        <td><input type="number" min="0" max="10" id="bdexVal" name="bdexVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+        <td><input type="number" min="0" max="10" id="bwisVal" name="bwisVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
+        <td><input type="number" min="0" max="10" id="bresVal" name="bresVal" style="width: 3em" value="0" onchange="checkBonus(this)"> </td>
       </tr>
     </table>
     <br>
     <!--Table for selection of character profession.-->
     <table id="profession" hidden>
       <tr>
-        <td colspan="3">
+        <td id="profession_select_header" colspan="3" style="background-color:yellow;">
           <div id="dynamic_profession_select"></div>
         </td>
       </tr>
@@ -261,18 +246,18 @@
               <td id=prayer_mod>-</td>
             </tr>
             <tr>
-              <td id="freeSkill">5) Select Free<br>Skill</td>
-              <td><input type="radio" id="cs_radio" name="freeSkill" value="CS" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="rs_radio" name="freeSkill" value="RS" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="dodge_radio" name="freeSkill" value="Dodge" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="picklocks_radio" name="freeSkill" value="Locks" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="barter_radio" name="freeSkill" value="Barter" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="heal_radio" name="freeSkill" value="Heal" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="alchemy_radio" name="freeSkill" value="Alchemy" style="display:none;"onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="perception_radio" name="freeSkill" value="Perception" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="arcane_radio" name="freeSkill" value="Arcane" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="forage_radio" name="freeSkill" value="Forage" style="display:none;" onchange="calcFinalValues()"></td>
-              <td><input type="radio" id="prayer_radio" name="freeSkill" value="Prayer" style="display:none;" onchange="calcFinalValues()"></td>
+              <td id="freeSkill_label" >Select Free<br>Skill</td>
+              <td><input type="radio" id="cs_radio" name="freeSkill" value="CS" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="rs_radio" name="freeSkill" value="RS" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="dodge_radio" name="freeSkill" value="Dodge" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="picklocks_radio" name="freeSkill" value="Locks" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="barter_radio" name="freeSkill" value="Barter" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="heal_radio" name="freeSkill" value="Heal" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="alchemy_radio" name="freeSkill" value="Alchemy" style="display:none;"onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="perception_radio" name="freeSkill" value="Perception" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="arcane_radio" name="freeSkill" value="Arcane" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="forage_radio" name="freeSkill" value="Forage" style="display:none;" onchange="professionBonusSelected()"></td>
+              <td><input type="radio" id="prayer_radio" name="freeSkill" value="Prayer" style="display:none;" onchange="professionBonusSelected()"></td>
             </tr>
           </table>
         <td></td>
@@ -295,7 +280,7 @@
     </table>
     <br>
     <h1 id=finalHeader hidden>Calculated Character Values</h1>
-    <table hidden id=finalStats WIDTH=340>
+    <table id=finalStats WIDTH=340 hidden>
       <tr bgcolor= "LightBlue">
         <th>STR</th>
         <th>CON</th>
@@ -314,7 +299,7 @@
       </tr>
     </table>
     <br>
-    <table hidden id=finalSkills>
+    <table id=finalSkills hidden>
       <tr bgcolor= "LightGrey">
         <th>CS <br> (DEX)</th>
         <th>RS <br> (DEX)</th>
