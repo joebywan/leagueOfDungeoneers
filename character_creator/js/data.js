@@ -199,7 +199,9 @@ const character_data = {
     },
   },
 
-  bonuses: {
+  config: {
+    attribute_dice: 10,
+    hp_dice: 6,
     maxBonusPoints: 15,
     maxBonusPerStat: 10,
     freeSkillBonus: 10,
@@ -208,44 +210,55 @@ const character_data = {
 };
 
 const character_generated = {
-  race: {
-    str: 0,
-    con: 0,
-    dex: 0,
-    wis: 0,
-    res: 0,
-    hp: 0,
-  },
+race: {
+  str: 0,
+  con: 0,
+  dex: 0,
+  wis: 0,
+  res: 0,
+  hp: 0,
+  hp_dice:0,
+},
 
-  rolls: {
-    first: 0,
-    second: 0,
-    third: 0,
-    fouth: 0,
-    fifth: 0,
-    hp: 0,
-  },
+rolls: {
+  first: 0,
+  second: 0,
+  third: 0,
+  fourth: 0,
+  fifth: 0,
+  hp: 0,
+},
 
-  rerolls: 0,
+rolled_attributes: {
+  str: 0,
+  con: 0,
+  dex: 0,
+  wis: 0,
+  res: 0,
+},
 
-  incrementRerolls() {
-    return this.rerolls++;
-  },
+rerolls: 0,
 
-  getMoreRerolls() {
-    if(this.rerolls < character_generated.bonuses.rerolls) {
-      return true;
-    };
-    return false;
-  },
+bonus_attributes: {
+  str: 0,
+  con: 0,
+  dex: 0,
+  wis: 0,
+  res: 0,
+},
 
-  bonus_attributes: {
-    str: 0,
-    con: 0,
-    dex: 0,
-    wis: 0,
-    res: 0,
-  }
-
-
+profession: {
+  cs: 0,
+  rs: 0,
+  dodge: 0,
+  picklocks: 0,
+  barter: 0,
+  heal: 0,
+  alchemy: 0,
+  perception: 0,
+  arcane: 0,
+  forage: 0,
+  prayer: 0,
+  bonus_hp: 0,
+},
 }
