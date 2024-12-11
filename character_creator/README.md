@@ -1,4 +1,8 @@
+## Character Creator
 
+**[Link here](http://knowhowit.com.au/leagueOfDungeoneers/character_creator/character_creator.html)**
+
+Pulled from [https://boardgamegeek.com/filepage/263741/character-creation-tool](https://boardgamegeek.com/filepage/263741/character-creation-tool) originally.  Have added functionality.
 
 # Changelog
 
