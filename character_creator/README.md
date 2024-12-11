@@ -6,11 +6,11 @@ Pulled from [https://boardgamegeek.com/filepage/263741/character-creation-tool](
 
 # Changelog
 
-Added dynamic lists for race + profession
-Added The Lost Prophet races + classes
-Added assign rolls to attributes option
-Re-added rerolls.
-Added config items in ./js/data.js for things like dice for attributes, hp, number of rerolls etc.
+* Added dynamic lists for race + profession
+* Added The Lost Prophet races + classes
+* Added assign rolls to attributes option
+* Re-added rerolls.
+* Added config items in ./js/data.js for things like dice for attributes, hp, number of rerolls etc.
 
 # Todo
 
