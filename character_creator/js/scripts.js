@@ -29,6 +29,10 @@ function deselectRadios(radio_group_name) {
   }
 }
 
+function reloadPage() {
+  location.reload();
+}
+
 // ---------------------------------------
 // Load stuff before the page loads proper
 // ---------------------------------------
@@ -268,7 +272,6 @@ function loadAttributeSelector() {
   for (let i of ["first","second","third","fourth","fifth"]) {
     dgei(i + "_roll_selector").innerText = character_generated.rolls[i]
   }
-  console.log("character_generated.rolls:", character_generated.rolls);
 
 
   // Array of attribute group names
@@ -280,16 +283,13 @@ function loadAttributeSelector() {
   attributes.forEach(attribute => {
     rollKeys.forEach((rollKey, index) => {
       const rowNumber = index + 1; // Rows are numbered 1 to 5
-      console.log(`Query: input[name="assign_attributes-radiogroup-${attribute}"][data-row="${rowNumber}"]`);
 
       // Select the specific radio button by name and data-row
       const radioButton = document.querySelector(`input[name="${"assign_attributes-radiogroup-" + attribute}"][data-row="${rowNumber}"]`);
-      console.log(`RadioButton found for ${attribute}, row ${rowNumber}:`, radioButton);
 
       if (radioButton) {
         // Assign the value from character_generated.rolls to the radio button
         radioButton.value = character_generated.rolls[rollKey];
-        console.log(`Assigned value ${character_generated.rolls[rollKey]} to radioButton`, radioButton);
       } else {
         console.warn(`RadioButton not found for attribute ${attribute}, row ${rowNumber}`);
       }
@@ -307,61 +307,65 @@ document.getElementById('assign_attributes_table').addEventListener('change', ev
 
     // Deselect other attributes in the same row
     document.querySelectorAll(`input[data-row="${selectedRow}"]`).forEach(otherRadio => {
-        if (otherRadio.name !== attributeGroup) {
-            otherRadio.checked = false;
-        };
+      if (otherRadio.name !== attributeGroup) {
+        otherRadio.checked = false;
+      }
     });
 
     // Deselect other rows for the same attribute
     document.querySelectorAll(`input[name="${attributeGroup}"]`).forEach(otherRadio => {
-        if (otherRadio.dataset.row !== selectedRow) {
-            otherRadio.checked = false;
-        };
+      if (otherRadio.dataset.row !== selectedRow) {
+        otherRadio.checked = false;
+      }
     });
-  };
 
-  areFiveAttributesSelected()
+    // Update rolled attributes and recalculate values
+    updateRolledAttributes();
+    calcFinalValues();
+    areFiveAttributesSelected();
+  }
 });
+
+
+function updateRolledAttributes() {
+  // Reset all rolled attributes
+  const attributes = ["str", "con", "dex", "wis", "res"];
+  attributes.forEach(attr => {
+    character_generated.rolled_attributes[attr] = 0; // Clear previous values
+  });
+
+  // Update based on selected radio buttons
+  document.querySelectorAll("input.attribute:checked").forEach(checkedRadio => {
+    const attributeGroup = checkedRadio.name.split("-")[2]; // Extract the attribute name (e.g., "str")
+    const value = parseInt(checkedRadio.value, 10);
+    if (!isNaN(value)) {
+      character_generated.rolled_attributes[attributeGroup] = value;
+    }
+  });
+}
 
 function areFiveAttributesSelected() {
   const rows = [1, 2, 3, 4, 5]; // Row numbers to validate
   let allRowsSelected = true; // Assume all rows are selected until proven otherwise
 
   rows.forEach(row => {
-      // Check if any radio button in the current row is checked
-      const isSelected = document.querySelector(`input[data-row="${row}"]:checked`);
-      console.log("isSelected: " + isSelected);
-
-      if (!isSelected) {
-          allRowsSelected = false; // Mark as false if any row is not selected
-      }
+    // Check if any radio button in the current row is checked
+    const isSelected = document.querySelector(`input[data-row="${row}"]:checked`);
+    if (!isSelected) {
+      allRowsSelected = false; // Mark as false if any row is not selected
+    }
   });
 
-  // Attribute names to map to rolled_attributes
-  const attributes = ["str", "con", "dex", "wis", "res"];
-
-  for (const attribute of attributes) {
-    console.log("attribute= " + attribute);
-    // Find the checked radio button for the group
-    const checkedRadio = document.querySelector(`input[name="assign_attributes-radiogroup-${attribute}"]:checked`);
-    // Assign its value to the corresponding rolled_attribute if it exists
-    if (checkedRadio) {
-      console.log("checkedradiovalue= " +checkedRadio.value);
-      character_generated.rolled_attributes[attribute] = parseInt(checkedRadio.value, 10); //10 is to signify decimal
-    }
-  }
-  console.log(character_generated.rolled_attributes)
-  calcFinalValues();
-
-  // If all rows are selected, perform the next actions
+  // Perform UI updates based on the selection state
   if (allRowsSelected) {
-      dgei("assign_attributes_header").style = "background-color:white;";
-      dgei("bonus_attributes").hidden = false;
-      dgei("bonus_attributes").focus();
+    dgei("assign_attributes_header").style = "background-color:white;";
+    dgei("bonus_attributes").hidden = false;
+    dgei("bonus_attributes").focus();
   } else {
-      console.log("Not all rows are selected yet.");
+    console.log("Not all rows are selected yet.");
   }
 }
+
 
 
 // ---------------------------------------
@@ -435,38 +439,52 @@ function checkBonus(element) {
 function professionSelected() {
   dgei("profession_select_header").style.backgroundColor="White";
   // Clear out the Free Skill radio buttons and ensure they are unselected
-  deselectRadios("freeskill");
+  deselectRadios("freeSkill");
 
   // Get the selected profession
   const profession = dgei("profession_select").value;
 
+  character_generated.profession = { ...character_data.professions[profession] };
+
   // Access the professions data from data.js
   const professions = character_data.professions;
 
-  // Check if the selected profession exists
-  if (professions.hasOwnProperty(profession)) {
-    const modData = professions[profession];
+  const modData = professions[profession];
 
-    // Iterate through the modifiers
-    for (const [key, value] of Object.entries(modData)) {
-      displayElement = dgei(key + "_mod");
+  Object.entries(character_generated.profession).forEach(([key, value]) => {
+    const cell = document.getElementById(`${key}_mod`);
+    if (cell) {
+      cell.innerHTML = value; // Update the cell content only if the corresponding cell exists
+    }
+  });
 
-      if (displayElement) {
-        displayElement.innerHTML = value;
-        if (parseInt(value) < 0) {
-          document.getElementById(key + "_radio").style.display = "";
-        }
+  // Iterate through the modifiers
+  Object.entries(character_generated.profession).forEach(([key, value]) => {
+    const radioButton = document.getElementById(`${key}_radio`);
+    if (radioButton) {
+      if (value === "NA" || value >= 0) {
+        radioButton.style.display = "none"; // Hide the radio button
+      } else {
+        radioButton.style.display = "inline"; // Show the radio button
       }
     }
+  });
     dgei("freeSkill_label").style.backgroundColor = "Yellow";
-  }
   calcFinalValues();
+  dgei("finalSkills").hidden = false;
 }
 
 function professionBonusSelected() {
 
   dgei("freeSkill_label").style.backgroundColor="White";
   dgei("finalSkills").hidden = false;
+
+  let freeSkillSelected = document.querySelector('input[name="freeSkill"]:checked').value;
+  if ((freeSkillSelected != undefined && freeSkillSelected != null)) {
+    character_generated.profession = { ...character_data.professions[dgei("profession_select").value] };
+    character_generated.profession[freeSkillSelected] += character_data.config.freeSkillBonus;
+  }
+
   calcFinalValues();
 }
 
@@ -491,43 +509,31 @@ function calcFinalValues() {
   dgei("finalHP").innerHTML =  Number(character_generated.race.hp) + Number(character_generated.rolls.hp) + Number(character_generated.profession.bonus_hp);
 
   // Calculte final values for Skills as STAT + Profession Modifier + Free Skill if applicable
-  dgei("finalCS").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(dgei("cs_mod").innerHTML) ;
-  dgei("finalRS").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(dgei("rs_mod").innerHTML);
-  dgei("finalDodge").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(dgei("dodge_mod").innerHTML);
-  dgei("finalLocks").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(dgei("picklocks_mod").innerHTML);
-
-  dgei("finalBarter").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(dgei("barter_mod").innerHTML);
-  dgei("finalHeal").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(dgei("heal_mod").innerHTML);
-  dgei("finalAlchemy").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(dgei("alchemy_mod").innerHTML);
-  dgei("finalPerception").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(dgei("perception_mod").innerHTML);
-
+  dgei("final_cs").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(character_generated.profession.cs);
+  dgei("final_rs").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(character_generated.profession.rs);
+  dgei("final_dodge").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(character_generated.profession.dodge);
+  dgei("final_picklocks").innerHTML = Number(dgei("finalDEX").innerHTML) + Number(character_generated.profession.picklocks);
+  dgei("final_barter").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(character_generated.profession.barter);
+  dgei("final_heal").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(character_generated.profession.heal);
+  dgei("final_alchemy").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(character_generated.profession.alchemy);
+  dgei("final_perception").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(character_generated.profession.perception);
 
   // Special case Arcane Arts because it is not available to all professions
   if (dgei("arcane_mod").innerHTML == "NA" ) {
-    dgei("finalArcane").innerHTML = "NA";
-  }  
-  else
-  {
-    dgei("finalArcane").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(dgei("arcane_mod").innerHTML);
+    dgei("final_arcane").innerHTML = "NA";
+  } else {
+    dgei("final_arcane").innerHTML = Number(dgei("finalWIS").innerHTML) + Number(character_generated.profession.arcane);
   }
 
-  dgei("finalForage").innerHTML = Number(dgei("finalCON").innerHTML) + Number(dgei("forage_mod").innerHTML);
+  dgei("final_forage").innerHTML = Number(dgei("finalCON").innerHTML) + Number(character_generated.profession.forage);
    
   // Special case Battle Prayers because it is not available to all professions
   if (dgei("prayer_mod").innerHTML == "NA" ) {
-    dgei("finalPrayer").innerHTML = "NA";
+    dgei("final_prayer").innerHTML = "NA";
   } else {
-    dgei("finalPrayer").innerHTML = Number(dgei("finalRES").innerHTML) + Number(dgei("prayer_mod").innerHTML);
+    dgei("final_prayer").innerHTML = Number(dgei("finalRES").innerHTML) + Number(character_generated.profession.prayer);
   }
 
-  // check the selected Free Skill and add +10 to the appropriate skill
-  let freeSkillSelected = document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked');
-  if ((freeSkillSelected === undefined || freeSkillSelected === null)) {
-
-  } else {
-    let freeskillradio = document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value
-    dgei("final"+ freeskillradio).innerHTML = Number(dgei("final" + freeskillradio).innerHTML) + character_data.config.freeSkillBonus
-  }
 
 
 // show final values

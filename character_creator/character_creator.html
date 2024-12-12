@@ -10,7 +10,7 @@
   <body>
     <h1>League of Dungeoneers</h1>
     <h3>Character Creation</h3>
-    <a href="https://github.com/joebywan/leagueOfDungeoneers">Back to the start</a>
+    <button onclick="reloadPage()">Restart the generator</button>
     <table>
       <tr>
         <td>
@@ -247,17 +247,17 @@
                   </tr>
                   <tr>
                     <td id="freeSkill_label" >Select Free<br>Skill</td>
-                    <td><input type="radio" id="cs_radio" name="freeSkill" value="CS" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="rs_radio" name="freeSkill" value="RS" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="dodge_radio" name="freeSkill" value="Dodge" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="picklocks_radio" name="freeSkill" value="Locks" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="barter_radio" name="freeSkill" value="Barter" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="heal_radio" name="freeSkill" value="Heal" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="alchemy_radio" name="freeSkill" value="Alchemy" style="display:none;"onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="perception_radio" name="freeSkill" value="Perception" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="arcane_radio" name="freeSkill" value="Arcane" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="forage_radio" name="freeSkill" value="Forage" style="display:none;" onchange="professionBonusSelected()"></td>
-                    <td><input type="radio" id="prayer_radio" name="freeSkill" value="Prayer" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="cs_radio" name="freeSkill" value="cs" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="rs_radio" name="freeSkill" value="rs" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="dodge_radio" name="freeSkill" value="dodge" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="picklocks_radio" name="freeSkill" value="picklocks" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="barter_radio" name="freeSkill" value="barter" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="heal_radio" name="freeSkill" value="heal" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="alchemy_radio" name="freeSkill" value="alchemy" style="display:none;"onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="perception_radio" name="freeSkill" value="perception" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="arcane_radio" name="freeSkill" value="arcane" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="forage_radio" name="freeSkill" value="forage" style="display:none;" onchange="professionBonusSelected()"></td>
+                    <td><input type="radio" id="prayer_radio" name="freeSkill" value="prayer" style="display:none;" onchange="professionBonusSelected()"></td>
                   </tr>
                 </table>
                 <td></td>
@@ -312,22 +312,25 @@
             </tr>
             <!--Display area of calculated skill values.-->
             <tr>
-              <td id=finalCS>-</td>
-              <td id=finalRS>-</td>
-              <td id=finalDodge>-</td>
-              <td id=finalLocks>-</td>
-              <td id=finalBarter>-</td>
-              <td id=finalHeal>-</td>
-              <td id=finalAlchemy>-</td>
-              <td id=finalPerception>-</td>
-              <td id=finalArcane>-</td>
-              <td id=finalForage>-</td>
-              <td id=finalPrayer>-</td>
-            </tr>
+              <td id=final_cs>-</td>
+              <td id=final_rs>-</td>
+              <td id=final_dodge>-</td>
+              <td id=final_picklocks>-</td>
+              <td id=final_barter>-</td>
+              <td id=final_heal>-</td>
+              <td id=final_alchemy>-</td>
+              <td id=final_perception>-</td>
+              <td id=final_arcane>-</td>
+              <td id=final_forage>-</td>
+              <td id=final_prayer>-</td>
+            </tr>            
           </table>
         </td>
-        <td>test</td>
+        <!-- <td>test</td> -->
       </tr>
     </table>
+    <button onclick="reloadPage()">Restart the generator</button>
+    <br>
+    <a href="https://github.com/joebywan/leagueOfDungeoneers">Back to the repo</a>
   </body>
 </html>
