@@ -176,7 +176,7 @@ function attribute_assignment_strategy_selected() {
 
   if (dgei("roll_stats_table").hidden) {
     dgei("roll_stats_table").hidden = false;
-  } else if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "assign" && character_generated.rerolls >= 2) {
+  } else if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "assign" && character_generated.rerolls >= character_data.config.attribute_rerolls) {
     dgei("assign_attributes_table").hidden = false;
   }
   calcFinalValues();
@@ -191,7 +191,7 @@ function attribute_assignment_strategy_selected() {
 function roll_stat(stat) {
   if (character_generated.rolls[stat] > 0) {
     character_generated.rerolls++
-    if (character_generated.rerolls === 2) {
+    if (character_generated.rerolls === character_data.config.attribute_rerolls) {
       for (let i of ["first","second","third","fourth","fifth","hp"]) {
         dgei("reroll_" + i).disabled = true;
         dgei("rerolls_label").style = "background-color:white;";
@@ -227,7 +227,7 @@ function roll_stat(stat) {
       character_generated.rolled_attributes[attribute] = character_generated.rolls[rollKey];
     }
   }
-  if (character_generated.rerolls === 2) {
+  if (character_generated.rerolls === character_data.config.attribute_rerolls) {
     if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "as_rolled") {
       dgei("bonus_attributes").hidden = false;
       dgei("bonus_attributes").focus();
@@ -347,7 +347,7 @@ function areFiveAttributesSelected() {
     // Assign its value to the corresponding rolled_attribute if it exists
     if (checkedRadio) {
       console.log("checkedradiovalue= " +checkedRadio.value);
-      character_generated.rolled_attributes[attribute] = parseInt(checkedRadio.value, 10);
+      character_generated.rolled_attributes[attribute] = parseInt(checkedRadio.value, 10); //10 is to signify decimal
     }
   }
   console.log(character_generated.rolled_attributes)
@@ -526,7 +526,7 @@ function calcFinalValues() {
 
   } else {
     let freeskillradio = document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value
-    dgei("final"+ freeskillradio).innerHTML = Number(dgei("final" + freeskillradio).innerHTML) + 10
+    dgei("final"+ freeskillradio).innerHTML = Number(dgei("final" + freeskillradio).innerHTML) + character_data.config.freeSkillBonus
   }
 
 
