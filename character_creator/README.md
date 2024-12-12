@@ -11,6 +11,8 @@ Pulled from [https://boardgamegeek.com/filepage/263741/character-creation-tool](
 * Added assign rolls to attributes option
 * Re-added rerolls.
 * Added config items in ./js/data.js for things like dice for attributes, hp, number of rerolls etc.
+* Double checked all race + class stats.  Fixed rogue innaccuracy
+* implemented data.js driven variables for everything.
 
 # Todo
 
