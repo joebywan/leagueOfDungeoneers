@@ -458,9 +458,9 @@ function professionSelected() {
         }
       }
     }
-
-      dgei("freeSkill_label").style.backgroundColor = "Yellow";
+    dgei("freeSkill_label").style.backgroundColor = "Yellow";
   }
+  calcFinalValues();
 }
 
 function professionBonusSelected() {
