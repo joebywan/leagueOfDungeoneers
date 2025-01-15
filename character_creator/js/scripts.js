@@ -180,9 +180,11 @@ function attribute_assignment_strategy_selected() {
 
   if (dgei("roll_stats_table").hidden) {
     dgei("roll_stats_table").hidden = false;
+    dgei("roll_stats_table").focus();
   } else if (document.querySelector('input[name="attribute_assignment_strategy_radiogroup"]:checked').value === "assign" && character_generated.rerolls >= character_data.config.attribute_rerolls) {
     dgei("assign_attributes_table").hidden = false;
   }
+
   calcFinalValues();
 
 }
@@ -193,12 +195,19 @@ function attribute_assignment_strategy_selected() {
 // Display the next area
 // ---------------------------------------
 function roll_stat(stat) {
-  if (character_generated.rolls[stat] > 0) {
+  if (stat === "skip") {
+    character_generated.rerolls = character_data.config.attribute_rerolls
+  }
+  if (character_generated.rolls[stat] > 0 || stat === "skip") {
     character_generated.rerolls++
-    if (character_generated.rerolls === character_data.config.attribute_rerolls) {
-      for (let i of ["first","second","third","fourth","fifth","hp"]) {
+    if (stat == "skip") {
+      character_generated.rerolls = character_data.config.attribute_rerolls
+    }
+    dgei("rerolls_remaining").innerText = (character_data.config.attribute_rerolls - character_generated.rerolls)
+    if (character_generated.rerolls >= character_data.config.attribute_rerolls || stat === "skip") {
+      for (let i of ["first","second","third","fourth","fifth","hp", "skip"]) {
         dgei("reroll_" + i).disabled = true;
-        dgei("rerolls_label").style = "background-color:white;";
+        dgei("reroll_cell_" + i).style = "background-color:white;";
       }
 
     }
@@ -257,9 +266,9 @@ function roll_stats() {
   }
 
   // enable the reroll buttons
+  dgei("rerolls_table").hidden = false;
   dgei("rerolls_row_attributes").hidden = false;
-  dgei("rerolls_row_hp").hidden = false;
-
+  dgei("rerolls_remaining").innerText = character_data.config.attribute_rerolls;
   calcFinalValues();
 }
 

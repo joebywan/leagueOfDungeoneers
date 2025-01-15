@@ -67,11 +67,11 @@
             </tr>
             <tr>
               <td style="text-align: left;"><input type="radio" name="attribute_assignment_strategy_radiogroup" value="as_rolled" onchange="attribute_assignment_strategy_selected()"> As rolled</td>
-              <td>The order in which the attributes are rolled is how they will be assigned to Str,Con,Dex,Wis,Res,HP.</td>
+              <td>Attributes rolled and assigned in order</td>
             </tr>
             <tr>
               <td style="text-align: left;"><input type="radio" name="attribute_assignment_strategy_radiogroup" value="assign" onchange="attribute_assignment_strategy_selected()"> As you choose</td>
-              <td>You have flexibility to choose all (except the hp) of where they're assigned.</td>
+              <td>Assign rolls to attributes in any order</td>
             </tr>
           </table>
           <br>
@@ -86,42 +86,42 @@
               <td>
                 <table>
                   <tr>
-                    <td style="border:none;"></td>
                     <th id="str_or_1st">1st</th>
                     <th id="con_or_2nd">2nd</th>
                     <th id="dex_or_3rd">3rd</th>
                     <th id="wis_or_4th">4th</th>
                     <th id="res_or_5th">5th</th>
+                    <th>HP</th>
                   </tr>
                   <tr>
-                    <td style="border:none;"></td>
-                    <td id=rolled_display_first>-</td>
-                    <td id=rolled_display_second>-</td>
-                    <td id=rolled_display_third>-</td>
-                    <td id=rolled_display_fourth>-</td>
-                    <td id=rolled_display_fifth>-</td>
+                    <td id="rolled_display_first">-</td>
+                    <td id="rolled_display_second">-</td>
+                    <td id="rolled_display_third">-</td>
+                    <td id="rolled_display_fourth">-</td>
+                    <td id="rolled_display_fifth">-</td>
+                    <td id=rolled_display_hp>-</td>
                   </tr>
                   <tr id="rerolls_row_attributes" hidden>
-                    <td id="rerolls_label" style="background-color:yellow;"></td>
-                    <td><button id="reroll_first" type="button" onclick="roll_stat('first')" >Reroll</button></td>
-                    <td><button id="reroll_second" type="button" onclick="roll_stat('second')" >Reroll</button></td>
-                    <td><button id="reroll_third" type="button" onclick="roll_stat('third')" >Reroll</button></td>
-                    <td><button id="reroll_fourth" type="button" onclick="roll_stat('fourth')" >Reroll</button></td>
-                    <td><button id="reroll_fifth" type="button" onclick="roll_stat('fifth')" >Reroll</button></td>
+                    <td id="reroll_cell_first" style="background-color:yellow; text-align:center;"><button id="reroll_first" type="button" onclick="roll_stat('first')">Reroll</button></td>
+                    <td id="reroll_cell_second" style="background-color:yellow; text-align:center;"><button id="reroll_second" type="button" onclick="roll_stat('second')">Reroll</button></td>
+                    <td id="reroll_cell_third" style="background-color:yellow; text-align:center;"><button id="reroll_third" type="button" onclick="roll_stat('third')">Reroll</button></td>
+                    <td id="reroll_cell_fourth" style="background-color:yellow; text-align:center;"><button id="reroll_fourth" type="button" onclick="roll_stat('fourth')">Reroll</button></td>
+                    <td id="reroll_cell_fifth" style="background-color:yellow; text-align:center;"><button id="reroll_fifth" type="button" onclick="roll_stat('fifth')">Reroll</button></td>
+                    <td id="reroll_cell_hp" style="background-color:yellow; text-align:center;"><button id=reroll_hp type="button" onclick="roll_stat('hp')" >Reroll</button></td>
                   </tr>
                 </table>
               </td>
               <td></td>
-              <td>
+              <td id="rerolls_table" hidden>
                 <table>
                   <tr>
-                    <th>HP</th>
+                    <th># Rerolls</th>
                   </tr>
                   <tr>
-                    <td id=rolled_display_hp>-</td>
+                    <td id=rerolls_remaining>-</td>
                   </tr>
-                  <tr id="rerolls_row_hp" hidden>
-                    <td><button id=reroll_hp type="button" onclick="roll_stat('hp')" >Reroll</button></td>
+                  <tr>
+                    <td id="reroll_cell_skip" style="background-color:yellow; text-align:center;"><button id="reroll_skip" type="button" onclick="roll_stat('skip')">Skip Rerolls</button></td>
                   </tr>
                 </table>
               </td>
