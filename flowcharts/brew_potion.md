@@ -13,16 +13,19 @@ flowchart TD
     F --> G
 
     G -->|yes| H[+10 bonus]
+    H --> I
     G -->|no| I{At least one<br>exquisite component?}
     
-    I -->|yes| H
+    I -->|yes| HH[+10 bonus]
+    HH --> J
     I -->|no| J[Make an Alchemy<br>skill check]
     
-    H --> J
+    
     J --> K{Success?}
 
-    K -->|no| L["Discard components.(You can keep<br>the bottle)"]
     K -->|yes| M{Known recipe?}
+    K -->|no| L["Discard components.<br>(You keep the bottle)"]
+    
 
     M -->|yes| N[Add new potion<br>to character sheet]
     M -->|no| O[Randomly determine<br>which potion<br>you've created]
