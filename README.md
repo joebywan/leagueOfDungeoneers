@@ -14,6 +14,8 @@ Todo list for the char gen here: [Char Gen todo](./character_creator/README.md)
 
 Considering the minimal info in the flowcharts in the book, plus the misprints, I'm working on mermaid versions of the flowcharts so I can update/add more.
 
+[Flowcharts Table of Contents](./flowcharts/README.md)
+
 ## Useful links
 
 * Official League of Dungeoneers site: [https://vonbraus.se/games/league-of-dungeoneers/](https://vonbraus.se/games/league-of-dungeoneers/)
