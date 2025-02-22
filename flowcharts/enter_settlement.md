@@ -1,5 +1,7 @@
 # Settlement Entry
 
+add side quests table
+
 Entering settlements result in quite a few dicerolls being required.  This is bringing them together to reduce the hunting through the absolute maze of a sourcebook.
 
 ## Settlement Events
