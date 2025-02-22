@@ -1,5 +1,7 @@
 # Check door/chest
 
+add dungeon events
+
 ## Opening a door or Chest (pg99)
 Opening a door or chest costs 1 Action Point and requires the model to be adjacent to the door or chest. Perform the following steps:
 
